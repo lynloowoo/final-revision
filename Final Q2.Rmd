@@ -1,0 +1,90 @@
+---
+title: "Final Q2"
+author: "Mujin Lin"
+date: "2021/10/21"
+output: html_document
+---
+---
+title: "Best model to Predict Price"
+date: '2021-10-09'
+description: Best model to Predict Price
+draft: no
+image: key_findings.jpg
+keywords: ''
+slug: "bmpp"
+categories:
+- ''
+- ''
+---
+  
+
+
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+```{r load-libraries, echo=FALSE}
+
+library(tidyverse) # the usual stuff: dplyr, readr, and other goodies
+library(lubridate) # to handle dates
+library(GGally) # for correlation-scatter plot matrix
+library(ggfortify) # to produce residual diagnostic plots
+library(rsample) # to split dataframe in training- & testing sets
+library(janitor) # clean_names()
+library(broom) # use broom:augment() to get tidy table with regression output, residuals, etc
+library(huxtable) # to get summary table of all models produced
+library(kableExtra) # for formatting tables
+library(moderndive) # for getting regression tables
+library(skimr) # for skim
+library(mosaic)
+library(leaflet) # for interactive HTML maps
+library(tidytext)
+library(viridis)
+library(vroom)
+library(huxtable)
+library(leaps)
+library(car)
+library(lubridate)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data =read.csv(here::here("C:/Users/XLMJX/Documents/FDSM/LBS/LBS-course/R/updated_on_8_Oct/ca09.mfa2022/final/DTB1YR.csv"))
+```
+
+```{r}
+data_longer <- data %>% 
+  pivot_longer(col=c(2:5),names_to = "asset", values_to = "price")
+data_longer$price <- as.numeric(data_longer$price)
+data_longer$DATE <- as.Date(data_longer$DATE)
+
+data_longer <- drop_na(data_longer)
+
+data_longer %>% 
+  ggplot(aes(x = DATE, y = price, group = asset, color = asset))+
+  geom_line()+
+  facet_wrap(~asset, scales = "free")+
+  theme_bw()+
+  scale_x_date(breaks =
+                     seq(as.Date("2017-01-03"),as.Date("2021-09-09"), by = "2 year"))+
+  scale_y_continuous(breaks = c(0:5*1))+
+  NULL
+
+```
+
