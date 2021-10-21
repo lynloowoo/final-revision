@@ -65,7 +65,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-data =read.csv(here::here("C:/Users/XLMJX/Documents/FDSM/LBS/LBS-course/R/updated_on_8_Oct/ca09.mfa2022/final/DTB1YR.csv"))
+data =read.csv(here::here('data','DTB1YR.csv'))
 ```
 
 ```{r}
