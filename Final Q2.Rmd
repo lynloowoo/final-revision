@@ -88,3 +88,20 @@ data_longer %>%
 
 ```
 
+
+```{r}
+
+data_longer <- data_longer %>% 
+  group_by(asset) %>% 
+  mutate(diff = price - lag(price)) %>% 
+  mutate(symbol = case_when(diff>0~"up",diff<0~"down",diff==0~"zero"))
+
+data_prob <- data_longer %>% 
+  group_by(asset) %>% 
+  summarise(up = count(symbol=="up"), down = count(symbol == "down"), zero = count(symbol == "zero"))
+
+data_prob <- data_prob %>% 
+  mutate(prob_up = up/(up+down+zero))
+
+```
+
