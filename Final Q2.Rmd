@@ -68,7 +68,9 @@ knitr::opts_chunk$set(echo = TRUE)
 data =read.csv(here::here('data','DTB1YR.csv'))
 ```
 
-```{r}
+```{r 4_graphs}
+
+
 data_longer <- data %>% 
   pivot_longer(col=c(2:5),names_to = "asset", values_to = "price")
 data_longer$price <- as.numeric(data_longer$price)
@@ -89,7 +91,7 @@ data_longer %>%
 ```
 
 
-```{r}
+```{r data_prob}
 
 data_longer <- data_longer %>% 
   group_by(asset) %>% 
@@ -102,6 +104,40 @@ data_prob <- data_longer %>%
 
 data_prob <- data_prob %>% 
   mutate(prob_up = up/(up+down+zero))
+
+```
+
+```{r Accumulate_excess_return }
+
+
+glimpse(data)
+data <- data %>% 
+  mutate(DTB1YR_execess = as.numeric(DTB1YR) - as.numeric(DGS6MO),
+         DGS5_excess = as.numeric(DGS5) - as.numeric(DGS6MO),
+         DGS10_excess = as.numeric(DGS10) - as.numeric(DGS6MO))
+
+
+
+data <- data %>% 
+  mutate(DTB1YR_acc = cumsum(DTB1YR_execess)/lag(cumsum(DTB1YR_execess)-1),
+         DGS5_acc = cumsum(DGS5_excess)/lag(cumsum(DGS5_excess)-1),
+         DGS10_acc = cumsum(DGS10_excess)/lag(cumsum(DGS10_excess))-1)
+
+data_acc_longer <- data %>% 
+  select(DATE, DTB1YR_acc, DGS5_acc, DGS10_acc) %>% 
+  pivot_longer(cols = c(2:4), names_to = "asset", values_to = "price")
+
+data_acc_longer$DATE <- as.Date(data_acc_longer$DATE)
+data_acc_longer %>% 
+  ggplot(aes(x = DATE, y = price, group = asset, color = asset))+
+  geom_line()+
+  #facet_wrap(~asset, scales = "free", nrow = 3)+
+  theme_bw()+
+  scale_x_date(breaks =
+                     seq(as.Date("2017-01-03"),as.Date("2021-09-09"), by = "2 year"))+
+  ylab("accumulated delta")
+  #scale_y_continuous(breaks = c(0:1*0.01))+
+  NULL
 
 ```
 
